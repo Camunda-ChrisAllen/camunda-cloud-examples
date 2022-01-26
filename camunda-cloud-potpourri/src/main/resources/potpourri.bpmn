@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_02msdg9" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.12.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="1.1.0">
+  <bpmn:process id="potpourri-process" name="Perfectly Playful Potpourri Process" isExecutable="true">
+    <bpmn:extensionElements>
+      <zeebe:userTaskForm id="userTaskForm_2u2463b">{
+  "schemaVersion": 2,
+  "components": [
+    {
+      "text": "# Ingredients for the potpourri",
+      "type": "text",
+      "id": "Field_1m9mezm"
+    },
+    {
+      "label": "Ingredient 1",
+      "type": "textfield",
+      "id": "Field_18mrf4k",
+      "key": "ingredient1",
+      "description": "some kind of smelly leaves perhaps?",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Ingredient 2",
+      "type": "textfield",
+      "id": "Field_1ncfc3u",
+      "key": "ingredient2",
+      "description": "more smelly things? (HINT: licorice would smell bad...)",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Ingredient 3",
+      "type": "textfield",
+      "id": "Field_0pyf1qh",
+      "key": "ingredient3",
+      "description": "perhaps something pretty? (HINT: if 'throwerror' then silliness might occur)",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "ingredient-form",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "1.3"
+}</zeebe:userTaskForm>
+    </bpmn:extensionElements>
+    <bpmn:startEvent id="StartEvent_1" name="Potpourri wanted">
+      <bpmn:outgoing>Flow_0ikktvy</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0ikktvy" sourceRef="StartEvent_1" targetRef="list-ingredients" />
+    <bpmn:endEvent id="Event_0ljpxf6" name="Potpourri created">
+      <bpmn:incoming>Flow_1n8fxzi</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_15levkq" sourceRef="order-ingredients" targetRef="ingredients-arrived" />
+    <bpmn:serviceTask id="order-ingredients" name="Order ingredients">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="order-ingredients" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1vx3jcg</bpmn:incoming>
+      <bpmn:outgoing>Flow_15levkq</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1ve7h0g" sourceRef="mix-ingredients" targetRef="Gateway_1twy7i9" />
+    <bpmn:serviceTask id="mix-ingredients" name="Mix ingredients and smell">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="mix-ingredients" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1mcxrtc</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ve7h0g</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1vx3jcg" sourceRef="list-ingredients" targetRef="order-ingredients" />
+    <bpmn:userTask id="list-ingredients" name="List ingredients">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:userTaskForm_2u2463b" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0ikktvy</bpmn:incoming>
+      <bpmn:incoming>Flow_0x6i4xs</bpmn:incoming>
+      <bpmn:outgoing>Flow_1vx3jcg</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1mcxrtc" sourceRef="ingredients-arrived" targetRef="mix-ingredients" />
+    <bpmn:intermediateCatchEvent id="ingredients-arrived" name="Ingredients arrived">
+      <bpmn:incoming>Flow_15levkq</bpmn:incoming>
+      <bpmn:outgoing>Flow_1mcxrtc</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0vzdr2u" messageRef="Message_3eddg2l" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="Gateway_1twy7i9" name="Smell good?">
+      <bpmn:incoming>Flow_1ve7h0g</bpmn:incoming>
+      <bpmn:outgoing>Flow_1n8fxzi</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0x6i4xs</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1n8fxzi" name="yes" sourceRef="Gateway_1twy7i9" targetRef="Event_0ljpxf6">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= smellGood</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0x6i4xs" name="no" sourceRef="Gateway_1twy7i9" targetRef="list-ingredients">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= not(smellGood)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:subProcess id="Activity_0z710q9" name="Order error" triggeredByEvent="true">
+      <bpmn:startEvent id="Event_1uynhlo" name="Order error received">
+        <bpmn:outgoing>Flow_1ilf1v5</bpmn:outgoing>
+        <bpmn:errorEventDefinition id="ErrorEventDefinition_09jl7b6" errorRef="Error_18mur3z" />
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_1ilf1v5" sourceRef="Event_1uynhlo" targetRef="Activity_1hpwoy8" />
+      <bpmn:endEvent id="Event_0fkdacd" name="Potpourri ignored">
+        <bpmn:incoming>Flow_08ebw49</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_08ebw49" sourceRef="Activity_1hpwoy8" targetRef="Event_0fkdacd" />
+      <bpmn:manualTask id="Activity_1hpwoy8" name="Silliness">
+        <bpmn:incoming>Flow_1ilf1v5</bpmn:incoming>
+        <bpmn:outgoing>Flow_08ebw49</bpmn:outgoing>
+      </bpmn:manualTask>
+    </bpmn:subProcess>
+  </bpmn:process>
+  <bpmn:message id="Message_3eddg2l" name="ingredients-arrived">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="= potpourriId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:error id="Error_18mur3z" name="order-error" errorCode="order-error-code" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="potpourri-process">
+      <bpmndi:BPMNEdge id="Flow_1mcxrtc_di" bpmnElement="Flow_1mcxrtc">
+        <di:waypoint x="688" y="117" />
+        <di:waypoint x="770" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vx3jcg_di" bpmnElement="Flow_1vx3jcg">
+        <di:waypoint x="400" y="117" />
+        <di:waypoint x="480" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ve7h0g_di" bpmnElement="Flow_1ve7h0g">
+        <di:waypoint x="870" y="117" />
+        <di:waypoint x="925" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15levkq_di" bpmnElement="Flow_15levkq">
+        <di:waypoint x="580" y="117" />
+        <di:waypoint x="652" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ikktvy_di" bpmnElement="Flow_0ikktvy">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="300" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1n8fxzi_di" bpmnElement="Flow_1n8fxzi">
+        <di:waypoint x="975" y="117" />
+        <di:waypoint x="1042" y="117" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1000" y="99" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0x6i4xs_di" bpmnElement="Flow_0x6i4xs">
+        <di:waypoint x="950" y="142" />
+        <di:waypoint x="950" y="230" />
+        <di:waypoint x="350" y="230" />
+        <di:waypoint x="350" y="157" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="963" y="163" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="155" y="142" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0nc4s6x_di" bpmnElement="ingredients-arrived">
+        <dc:Bounds x="652" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="643" y="142" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ljpxf6_di" bpmnElement="Event_0ljpxf6">
+        <dc:Bounds x="1042" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1018" y="142" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1twy7i9_di" bpmnElement="Gateway_1twy7i9" isMarkerVisible="true">
+        <dc:Bounds x="925" y="92" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="919" y="68" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_13twgug_di" bpmnElement="list-ingredients">
+        <dc:Bounds x="300" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1miblem_di" bpmnElement="order-ingredients">
+        <dc:Bounds x="480" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ffi0y5_di" bpmnElement="mix-ingredients">
+        <dc:Bounds x="770" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1524z0s_di" bpmnElement="Activity_0z710q9" isExpanded="true">
+        <dc:Bounds x="270" y="300" width="382" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ilf1v5_di" bpmnElement="Flow_1ilf1v5">
+        <di:waypoint x="346" y="400" />
+        <di:waypoint x="400" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08ebw49_di" bpmnElement="Flow_08ebw49">
+        <di:waypoint x="500" y="400" />
+        <di:waypoint x="562" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1mdz7h8_di" bpmnElement="Event_1uynhlo">
+        <dc:Bounds x="310" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="301" y="425" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0fkdacd_di" bpmnElement="Event_0fkdacd">
+        <dc:Bounds x="562" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="538" y="425" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_07do1ep_di" bpmnElement="Activity_1hpwoy8">
+        <dc:Bounds x="400" y="360" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

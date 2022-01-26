@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 2,
+  "components": [
+    {
+      "text": "# Ingredients for the potpourri",
+      "type": "text",
+      "id": "Field_1m9mezm"
+    },
+    {
+      "label": "Ingredient 1",
+      "type": "textfield",
+      "id": "Field_18mrf4k",
+      "key": "ingredient1",
+      "description": "some kind of smelly leaves perhaps?",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Ingredient 2",
+      "type": "textfield",
+      "id": "Field_1ncfc3u",
+      "key": "ingredient2",
+      "description": "more smelly things? (HINT: licorice would smell bad...)",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Ingredient 3",
+      "type": "textfield",
+      "id": "Field_0pyf1qh",
+      "key": "ingredient3",
+      "description": "perhaps something pretty? (HINT: if 'throwerror' then silliness might occur)",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "ingredient-form",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "1.3"
+}
